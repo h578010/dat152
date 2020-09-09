@@ -6,14 +6,19 @@ class GuiHandler {
 		this.container = container;
 		this.deleteCallBacks = [];
 		this.statusCallBacks = [];
-		this.tasks = [];
-		this.msgParagraph = this.getMsgParagraph();
 		this.tableRoot = this.initializeTable();
 	}	
-	getMsgParagraph() {
-		let msgDiv = this.container.firstElementChild;
-		return msgDiv.firstElementChild;
+	set allstatuses (statuses) {
+		this.statuses = statuses;
 	}
+	set deleteTaskCallback (deleteCB) {
+		this.deleteCallBacks.push(deleteCB);
+	}
+	set newStatusCallback (statusCB) {
+		this.statusCallBacks.push(statusCB);
+	}
+
+	// private helper methods
 	initializeTable() {
 		let tableDiv = this.container.firstElementChild.nextElementSibling.nextElementSibling;
 		let tableNode = document.createElement("table");
@@ -35,27 +40,21 @@ class GuiHandler {
 		return tBodyNode;
 	}
 
-	set allstatuses (statuses) {
-		this.statuses = statuses;
-	}
-	set deleteTaskCallback (deleteCB) {
-		this.deleteCallBacks.push(deleteCB);
-	}
-	set newStatusCallbask (statusCB) {
-		this.statusCallBacks.push(statusCB);
+	disableActiveStatus(status, node) {
+		let activeNode = node.firstElementChild.nextElementSibling;
+		while (activeNode != null) {
+			activeNode.disabled = (activeNode.getAttribute("value") === status);
+			activeNode = activeNode.nextElementSibling;
+		}
 	}
 	
-	showTask(task) {
-		
-		this.tasks.forEach( (t) => {
-			if (t.id === task.id) {
-				console.log("Ups, this id is already on the list!");
-				return;
-			}
-		});
-		this.tasks.push(task);
-		let no = this.tasks.length;
-		this.msgParagraph.innerHTML = "Found " + no + " tasks."
+	showNoOfTasks() {
+		let msgDiv = this.container.firstElementChild;
+		let no = this.tableRoot.childNodes.length;
+		msgDiv.firstElementChild.innerHTML = "Found " + no + " tasks.";
+	}
+	
+	showTask(task) {		// add a task to the list
 		let trNode = document.createElement("tr");
 		this.tableRoot.insertBefore(trNode, this.tableRoot.firstElementChild);
 		trNode.setAttribute("data-identity", task.id);
@@ -70,19 +69,27 @@ class GuiHandler {
 		let tdNode3 = document.createElement("td");
 		trNode.appendChild(tdNode3);
 		let selectNode = document.createElement("select");
+		selectNode.addEventListener("change", (event) => {
+			if (window.confirm("Set ''" + task.title + "' to '" + event.target.value + "?")) {
+				this.statusCallBacks.forEach( (sCB) => {
+					sCB(task.id, event.target.value);
+				});
+			}
+		});
 		tdNode3.appendChild(selectNode);
 		let optionNode = document.createElement("option");
 		selectNode.appendChild(optionNode);
 		optionNode.setAttribute("value", "0");
-		let text = document.createTextNode("<Modify>");
-		optionNode.appendChild(text);
+		let textNode = document.createTextNode("<Modify>");
+		optionNode.appendChild(textNode);
 		statuses.forEach((s => {
 			let optionNode = document.createElement("option");
 			selectNode.appendChild(optionNode);
 			optionNode.setAttribute("value", s);
-			let text = document.createTextNode(s);
-			optionNode.appendChild(text);
+			let textNode = document.createTextNode(s);
+			optionNode.appendChild(textNode);
 		}));
+		this.disableActiveStatus(task.status, selectNode);
 		let tdNode4 = document.createElement("td");
 		trNode.appendChild(tdNode4);
 		let buttonNode = document.createElement("button");
@@ -90,21 +97,36 @@ class GuiHandler {
 		buttonNode.setAttribute("type", "button");
 		let removeNode = document.createTextNode("Remove");
 		buttonNode.appendChild(removeNode);
-	
+		
+		buttonNode.addEventListener("click", () => {
+			if (window.confirm("Delete task '" + task.title + "'?")) {
+				this.deleteCallBacks.forEach( (dCB) => {
+					dCB(task.id);
+				});
+			}
+		});
+		this.showNoOfTasks();
 	}
+	
 	update(task) {
 		let taskId = document.querySelector("tr[data-identity = '" + task.id +"']");
-		let status = taskId.firstElementChild.nextElementSibling;
-		
+		let statusNode = taskId.firstElementChild.nextElementSibling;
+		statusNode.firstChild.nodeValue = task.status;
+		let selectNode = statusNode.nextElementSibling.firstElementChild;
+		this.disableActiveStatus(task.status, selectNode);
 	}
 	
+	removeTask(id) {
+		let taskNode = document.querySelector("tr[data-identity = '" + id +"']");
+		taskNode.remove();
+		this.showNoOfTasks();
+	}
 	
-	
-	
-	
-	
-	
-	
-	
+	noTask() { //Tells GuiHandler that the list of tasks are empty, e.g. when the database has no tasks.
+		while (this.tableRoot.firstElementChild != null) {
+			this.tableRoot.firstElementChild.remove();
+		}
+		this.showNoOfTasks();
+	}
 	
 }
