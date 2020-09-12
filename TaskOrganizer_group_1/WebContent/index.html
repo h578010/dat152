@@ -5,8 +5,7 @@
 <title>Tasks</title>
 <script src="GuiHandler.js" defer></script>
 <script src="TaskBox.js" defer></script>
-<script src="test.js" defer></script>
-
+<script src="Controller.js" defer></script>
 <link rel="stylesheet" href="modal.css">
 </head>
 <body>
@@ -15,8 +14,7 @@
 		<div class="message">
 			<p>Waiting for server data.</p>
 		</div>
-		<div class="newtask" id="newtask">
-			<!--  Skal jeg legge til id selv? Pga test? -->
+		<div class="newtask" id="newtask">			<!--  Kan jeg legge til id selv? Se siste linje i testkoden i Controller.js -->
 			<button type="button" disabled>New task</button>
 		</div>
 		<div class="tasklist"></div>
@@ -30,7 +28,7 @@
 			<table>
 				<tr>
 					<th>Title:</th>
-					<td><input type="text" size="25" maxlength="80" /></td>
+					<td><input type="text" size="25" maxlength="80"></input></td>
 				</tr>
 				<tr>
 					<th>Status:</th>

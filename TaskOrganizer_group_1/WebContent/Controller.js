@@ -27,7 +27,7 @@ const tasksmodaleboxdiv = document.getElementById("taskbox")
 const tasknewbutton = document.getElementById("newtask").getElementsByTagName("button")[0]
 
 tasknewbutton.addEventListener("click",(event) => {taskbox.show()},true)
-const taskbox = new TaskBox(tasksmodaleboxdiv)
+const taskbox = new TaskBox(tasksmodaleboxdiv)	// Er det ok at jeg endret denne fra ingenting til const?
 taskbox.allstatuses = statuses
 taskbox.onsubmitCallback = (task) => {
     console.log(`New task '${task.title}' with initial status ${task.status} is added by the user.`)

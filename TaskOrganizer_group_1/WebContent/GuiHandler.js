@@ -51,7 +51,7 @@ class GuiHandler {
 	showNoOfTasks() {
 		let msgDiv = this.container.firstElementChild;
 		let no = this.tableRoot.childNodes.length;
-		msgDiv.firstElementChild.innerHTML = "Found " + no + " tasks.";
+		msgDiv.firstElementChild.innerText = "Found " + no + " tasks.";	
 	}
 	
 	showTask(task) {		// add a task to the list

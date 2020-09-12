@@ -4,7 +4,7 @@ class TaskBox {
 
 	constructor(modaltaskboxdiv) {
 		this.submitCallBacks = [];		// ???
-		
+
 		this.modaltaskboxdiv = modaltaskboxdiv;
 		this.span = this.modaltaskboxdiv.firstElementChild.firstElementChild;
 		this.body = this.modaltaskboxdiv.parentNode;
@@ -12,24 +12,25 @@ class TaskBox {
 		this.addTaskBtn = this.span.nextElementSibling.nextElementSibling.firstElementChild;
 		this.tableNode = this.span.nextElementSibling;
 		this.selectNode = this.tableNode.firstElementChild.firstElementChild.nextElementSibling.firstElementChild.nextElementSibling.firstElementChild;
-		
-
-		this.show = (() => {
-			this.modaltaskboxdiv.style.display = "block";
-		});
+		this.inputNode = this.tableNode.firstElementChild.firstElementChild.firstElementChild.nextElementSibling.firstElementChild;
 
 		this.span.onclick = (() => {
-			this.modaltaskboxdiv.style.display = "none";
+			this.close();
 		});
 
 		window.onclick = (() => {
 			if (event.target == this.modaltaskboxdiv) {
-				this.modaltaskboxdiv.style.display = "none";
+				this.close();
 			}
 		});
-		
-		// this.addTaskBtn.onclick =
-		
+
+		this.addTaskBtn.addEventListener("click", () => {
+			let newTask = {"title" : this.inputNode.value, "status" : this.selectNode.value};
+			this.submitCallBacks.forEach((sCB) => {
+				sCB(newTask);
+			});
+		});
+
 		statuses.forEach((s => {
 			let optionNode = document.createElement("option");
 			this.selectNode.appendChild(optionNode);
@@ -42,11 +43,15 @@ class TaskBox {
 	set allstatuses(statuses) {
 		this.statuses = statuses;
 	}
-	
-	onsubmitCallback(newTask) {		//Setter that adds a callback to run when the Add task button is clicked.
-		
+
+	show() {
+		this.modaltaskboxdiv.style.display = "block";
 	}
-	
+
+	set onsubmitCallback(sCB) {		//Setter that adds a callback to run when the Add task button is clicked.
+		this.submitCallBacks.push(sCB);
+	}
+
 	close() {						//Method for calling after a new task has been added by Add task button
 		this.modaltaskboxdiv.style.display = "none";
 	}
