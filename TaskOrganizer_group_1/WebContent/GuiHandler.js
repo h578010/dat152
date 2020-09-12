@@ -82,7 +82,7 @@ class GuiHandler {
 		optionNode.setAttribute("value", "0");
 		let textNode = document.createTextNode("<Modify>");
 		optionNode.appendChild(textNode);
-		statuses.forEach((s => {
+		this.statuses.forEach((s => {
 			let optionNode = document.createElement("option");
 			selectNode.appendChild(optionNode);
 			optionNode.setAttribute("value", s);

@@ -4,7 +4,6 @@ class TaskBox {
 
 	constructor(modaltaskboxdiv) {
 		this.submitCallBacks = [];		// ???
-
 		this.modaltaskboxdiv = modaltaskboxdiv;
 		this.span = this.modaltaskboxdiv.firstElementChild.firstElementChild;
 		this.body = this.modaltaskboxdiv.parentNode;
@@ -25,23 +24,22 @@ class TaskBox {
 		});
 
 		this.addTaskBtn.addEventListener("click", () => {
-			let newTask = {"title" : this.inputNode.value, "status" : this.selectNode.value};
+			let newTask = { "title": this.inputNode.value, "status": this.selectNode.value };
 			this.submitCallBacks.forEach((sCB) => {
 				sCB(newTask);
 			});
 		});
+	}
 
-		statuses.forEach((s => {
+	set allstatuses(statuses) {
+		this.statuses = statuses;
+		this.statuses.forEach((s => {
 			let optionNode = document.createElement("option");
 			this.selectNode.appendChild(optionNode);
 			optionNode.setAttribute("value", s);
 			let textNode = document.createTextNode(s);
 			optionNode.appendChild(textNode);
 		}));
-	}
-
-	set allstatuses(statuses) {
-		this.statuses = statuses;
 	}
 
 	show() {
