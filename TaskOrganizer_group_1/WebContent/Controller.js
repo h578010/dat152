@@ -1,77 +1,86 @@
 "use strict";
 
-const container = document.getElementById("taskcontainer");
-const gui = new GuiHandler(container);
-let taskbox;
+const container1 = document.getElementById("taskcontainer1");
+const container2 = document.getElementById("taskcontainer2");
+const gui1 = new GuiHandler(container1);
+const gui2 = new GuiHandler(container2);
 
+const api = new TaskAPI("http://localhost:8080/");
 
-async function fetchStatuses() {
-	let statusesResponse = await fetch('http://localhost:8080/TaskServices/broker/allstatuses');
-	let statusesObject = await statusesResponse.json();
-	gui.allstatuses = statusesObject.allstatuses;
-	let tasksResponse = await fetch('http://localhost:8080/TaskServices/broker/tasklist');
-	let tasksObject = await tasksResponse.json();
+const tasksmodaleboxdiv1 = document.getElementById("taskbox1");
+const tasksmodaleboxdiv2 = document.getElementById("taskbox2");
 
-	tasksObject.tasks.forEach((task) => { gui.showTask(task) });
-	taskbox = new TaskBox(tasksmodaleboxdiv);
-	taskbox.allstatuses = statusesObject.allstatuses;
+async function initialize() {
+	let allStatuses = await api.getStatuses();
+	gui1.allstatuses = allStatuses;
+	gui2.allstatuses = allStatuses;
 
-	taskbox.onsubmitCallback = async (task) => {
-		let newTaskResponse = await fetch('http://localhost:8080/TaskServices/broker/task', {
-			method: "POST",
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(task)
-		});
-		if (newTaskResponse.ok) {
-			let newTaskObject = await newTaskResponse.json();
-			gui.showTask(newTaskObject.task);
-			taskbox.close();
+	let tasks = await api.getTasklist();
+
+	tasks.forEach((task) => {
+		gui1.showTask(task);
+		gui2.showTask(task);
+	});
+
+	const taskbox1 = new TaskBox(tasksmodaleboxdiv1);
+	const taskbox2 = new TaskBox(tasksmodaleboxdiv2);
+
+	taskbox1.allstatuses = allStatuses;
+	taskbox2.allstatuses = allStatuses;
+
+	gui1.newTaskBtnCB = () => {
+		taskbox1.show();
+	}
+	
+	gui2.newTaskBtnCB = () => {
+		taskbox2.show();
+	}
+
+	async function submitCB(task, tb) {
+		let newTask = await api.addTask(task);
+		if (newTask) {
+			gui1.showTask(newTask);
+			gui2.showTask(newTask);
+			tb.close();
 		} else {
 			alert("Something went wrong...")
 		}
 	}
-}
-fetchStatuses();
+	taskbox1.onsubmitCallback = (task) => {
+		submitCB(task, taskbox1);
+	}
+	taskbox2.onsubmitCallback = (task) => {
+		submitCB(task, taskbox2);
+	}
 
-gui.deleteTaskCallback = (id) => { console.log(`User has approved the deletion of task with id ${id}.`) }
-gui.deleteTaskCallback = (id) => { console.log(`Observer, task with id ${id} is not removed from the view!`) }
-gui.deleteTaskCallback = async (id) => {
-	let deleteTaskResponse = await fetch(`http://localhost:8080/TaskServices/broker/task/${id}`, {
-			method: "DELETE",
-			headers: {
-				'Content-Type': 'application/json'
-			}
-		});
-		if (deleteTaskResponse.ok) {
-			gui.removeTask(id)
+	let deleteCallback = async (id) => {
+		if (await api.deleteTask(id)) {
+			gui1.removeTask(id);
+			gui2.removeTask(id);
 		} else {
 			alert("Something went wrong...")
 		}
-}
+	}
+	gui1.deleteTaskCallback = deleteCallback;
+	gui2.deleteTaskCallback = deleteCallback;
 
-gui.newStatusCallback = async (id, newStatus) => {
-	let newStatusResponse = await fetch(`http://localhost:8080/TaskServices/broker/task/${id}`, {
-			method: "PUT",
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({status: newStatus})
-		});
-		if (newStatusResponse.ok) {
-			gui.update({id, status: newStatus});
+	let newStatusCallback = async (id, newStatus) => {
+		if (await api.updateStatus(id, newStatus)) {
+			gui1.update({ id, status: newStatus });
+			gui2.update({ id, status: newStatus });
 		} else {
 			alert("Something went wrong...")
 		}
+	}
+	gui1.newStatusCallback = newStatusCallback;
+	gui2.newStatusCallback = newStatusCallback;
+	
+	gui1.disableBtn = false;
+	gui2.disableBtn = false;
 }
 
+initialize();
 
-const tasksmodaleboxdiv = document.getElementById("taskbox")
-const tasknewbutton = document.getElementById("newtask").getElementsByTagName("button")[0]
-
-tasknewbutton.addEventListener("click", (event) => { taskbox.show() }, true)
-document.getElementById('newtask').getElementsByTagName("button")[0].disabled = false
 
 
 

@@ -7,12 +7,11 @@ class TaskBox {
 		this.modaltaskboxdiv = modaltaskboxdiv;
 		this.span = this.modaltaskboxdiv.firstElementChild.firstElementChild;
 		this.body = this.modaltaskboxdiv.parentNode;
-		this.newTaskBtn = this.body.firstElementChild.firstElementChild.nextElementSibling;
 		this.addTaskBtn = this.span.nextElementSibling.nextElementSibling.firstElementChild;
 		this.tableNode = this.span.nextElementSibling;
 		this.selectNode = this.tableNode.firstElementChild.firstElementChild.nextElementSibling.firstElementChild.nextElementSibling.firstElementChild;
 		this.inputNode = this.tableNode.firstElementChild.firstElementChild.firstElementChild.nextElementSibling.firstElementChild;
-
+		
 		this.span.onclick = (() => {
 			this.close();
 		});

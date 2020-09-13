@@ -17,6 +17,12 @@ class GuiHandler {
 	set newStatusCallback (statusCB) {
 		this.statusCallBacks.push(statusCB);
 	}
+	set newTaskBtnCB (callback) {
+		this.container.firstElementChild.nextElementSibling.firstElementChild.addEventListener('click', callback);
+	}
+	set disableBtn (disabled) {
+		this.container.firstElementChild.nextElementSibling.firstElementChild.disabled = disabled;
+	}
 
 	// private helper methods
 	initializeTable() {
@@ -109,7 +115,7 @@ class GuiHandler {
 	}
 	
 	update(task) {
-		let taskId = document.querySelector("tr[data-identity = '" + task.id +"']");
+		let taskId = this.tableRoot.querySelector("tr[data-identity = '" + task.id +"']");
 		let statusNode = taskId.firstElementChild.nextElementSibling;
 		statusNode.firstChild.nodeValue = task.status;
 		let selectNode = statusNode.nextElementSibling.firstElementChild;
@@ -117,7 +123,7 @@ class GuiHandler {
 	}
 	
 	removeTask(id) {
-		let taskNode = document.querySelector("tr[data-identity = '" + id +"']");
+		let taskNode = this.tableRoot.querySelector("tr[data-identity = '" + id +"']");
 		taskNode.remove();
 		this.showNoOfTasks();
 	}
