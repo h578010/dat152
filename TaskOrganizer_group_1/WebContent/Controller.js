@@ -5,7 +5,7 @@ const container2 = document.getElementById("taskcontainer2");
 const gui1 = new GuiHandler(container1);
 const gui2 = new GuiHandler(container2);
 
-const api = new TaskAPI("http://localhost:8080/");
+const api = new TaskAPI("../");
 
 const tasksmodaleboxdiv1 = document.getElementById("taskbox1");
 const tasksmodaleboxdiv2 = document.getElementById("taskbox2");
