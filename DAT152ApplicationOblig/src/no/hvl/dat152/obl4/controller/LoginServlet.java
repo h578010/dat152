@@ -1,14 +1,15 @@
 package no.hvl.dat152.obl4.controller;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import no.hvl.dat152.obl4.database.AppUser;
 import no.hvl.dat152.obl4.database.AppUserDAO;
 import no.hvl.dat152.obl4.util.Role;
@@ -38,13 +39,7 @@ public class LoginServlet extends HttpServlet {
 		if (username != null && password != null) {
 
 			AppUserDAO userDAO = new AppUserDAO();
-			AppUser authUser = null;
-			try {
-				authUser = userDAO.getAuthenticatedUser(username, password);
-			} catch (NoSuchAlgorithmException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			AppUser authUser = userDAO.getAuthenticatedUser(username, password);
 
 			if (authUser != null) {
 				successfulLogin = true;

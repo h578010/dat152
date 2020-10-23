@@ -1,7 +1,6 @@
 package no.hvl.dat152.obl4.controller;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -21,7 +20,6 @@ public class NewUserServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("Hei hei");
 		request.getRequestDispatcher("newuser.jsp").forward(request, response);
 	}
 
@@ -31,7 +29,6 @@ public class NewUserServlet extends HttpServlet {
 		request.removeAttribute("message");
 		request.removeAttribute("usernames");
 		request.removeAttribute("updaterole");
-		System.out.println("post");
 
 		boolean successfulRegistration = false;
 
@@ -51,26 +48,18 @@ public class NewUserServlet extends HttpServlet {
 				.getParameter("dicturl"));
 
 		AppUser user = null;
-		//if (Validator.validPassword(password) && password.equals(confirmedPassword))
-		if (Validator.validPassword(password) && password.equals(confirmedPassword)) {
-			System.out.println(password);
+		if (password.equals(confirmedPassword)) {
 
 			AppUserDAO userDAO = new AppUserDAO();
 
-			try {
-				user = new AppUser(username, userDAO.generatePassHash(password),
-						firstName, lastName, mobilePhone, Role.USER.toString());
-			} catch (NoSuchAlgorithmException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			user = new AppUser(username, userDAO.generatePassHash(password),
+					firstName, lastName, mobilePhone, Role.USER.toString());
 
 			successfulRegistration = userDAO.saveUser(user);
 
 		}
 
 		if (successfulRegistration) {
-			System.out.println("success");
 			request.getSession().setAttribute("user", user);
 			Cookie dicturlCookie = new Cookie("dicturl", preferredDict);
 			dicturlCookie.setMaxAge(1000000);
@@ -79,7 +68,6 @@ public class NewUserServlet extends HttpServlet {
 			response.sendRedirect("searchpage");
 
 		} else {
-			System.out.println("error");
 			request.setAttribute("message", "Registration failed!");
 			request.getRequestDispatcher("newuser.jsp").forward(request,
 					response);

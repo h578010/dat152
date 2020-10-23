@@ -1,38 +1,33 @@
 package no.hvl.dat152.obl4.database;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.DatatypeConverter;
+
 import org.apache.commons.codec.digest.DigestUtils;
 
 public class AppUserDAO {
 
-  public AppUser getAuthenticatedUser(String username, String password) throws NoSuchAlgorithmException {
+  public AppUser getAuthenticatedUser(String username, String password) {
 
     String hashedPassword = generatePassHash(password);
 
-    // Changing the SQL query to a prepared statement. 
     String sql = "SELECT * FROM SecOblig.AppUser" 
-        + " WHERE username = ?" + " AND passhash = ?";
+        + " WHERE username = '" + username + "'"
+        + " AND passhash = '" + hashedPassword + "'";
     
     
     AppUser user = null;
 
     Connection c = null;
-    PreparedStatement s = null;
+    Statement s = null;
     ResultSet r = null;
 
     try {        
       c = DatabaseHelper.getConnection();
-      s = c.prepareStatement(sql);
-      s.setString(1, username);
-      s.setString(2, password);
+      s = c.createStatement();       
       r = s.executeQuery(sql);
 
       if (r.next()) {
@@ -57,33 +52,32 @@ public class AppUserDAO {
 
   public boolean saveUser(AppUser user) {
 
-    String sql = "INSERT INTO SecOblig.AppUser VALUES (?, ?, ?, ?, ?, ?)";
+    String sql = "INSERT INTO SecOblig.AppUser VALUES (" 
+        + "'" + user.getUsername()  + "', "
+        + "'" + user.getPasshash()  + "', "
+        + "'" + user.getFirstname() + "', "
+        + "'" + user.getLastname()  + "', "
+        + "'" + user.getMobilephone()  + "', "
+        + "'" + user.getRole() + "')";
 
     Connection c = null;
-    PreparedStatement s = null;
+    Statement s = null;
     ResultSet r = null;
 
-    try {
-		c = DatabaseHelper.getConnection();
-		s = c.prepareStatement(sql);
-		s.setString(1, user.getUsername());
-		s.setString(2, user.getPasshash());
-		s.setString(3, user.getFirstname());
-		s.setString(4, user.getLastname());
-		s.setString(5, user.getMobilephone());
-		s.setString(6, user.getRole());
-		int row = s.executeUpdate();
-		if (row >= 0) {
-			return true;
-		}
-	} catch (Exception e) {
-		System.out.println(e);
-		return false;
-	} finally {
-		DatabaseHelper.closeConnection(r, s, c);
-	}
-
-	return false;
+    try {        
+      c = DatabaseHelper.getConnection();
+      s = c.createStatement();       
+      int row = s.executeUpdate(sql);
+      if(row >= 0)
+    	  return true;
+    } catch (Exception e) {
+    	System.out.println(e);
+    	return false;
+    } finally {
+      DatabaseHelper.closeConnection(r, s, c);
+    }
+    
+    return false;
   }
   
   public List<String> getUsernames() {
@@ -114,73 +108,66 @@ public class AppUserDAO {
 	  return usernames;
   }
   
-  public boolean updateUserPassword(String username, String passwordnew) throws NoSuchAlgorithmException {
+  public boolean updateUserPassword(String username, String passwordnew) {
 	  
 	  String hashedPassword = generatePassHash(passwordnew);
 	  
-	    String sql = "UPDATE SecOblig.AppUser SET passhash =? WHERE username =?";
+	    String sql = "UPDATE SecOblig.AppUser "
+	    		+ "SET passhash = '" + hashedPassword + "' "
+	    				+ "WHERE username = '" + username + "'";
 	
 	    Connection c = null;
-	    PreparedStatement s = null;
+	    Statement s = null;
 	    ResultSet r = null;
 	
-		try {
-			c = DatabaseHelper.getConnection();
-			s = c.prepareStatement(sql);
-			s.setString(1, hashedPassword);
-			s.setString(2, username);
-			int row = s.executeUpdate();
-			if (row >= 0) {
-				System.out.println("Password update successful for " + username);
-				return true;
-			}
-
-		} catch (Exception e) {
-			System.out.println(e);
-			return false;
-		} finally {
-			DatabaseHelper.closeConnection(r, s, c);
-		}
-
-		return false;
+	    try {        
+	      c = DatabaseHelper.getConnection();
+	      s = c.createStatement();       
+	      int row = s.executeUpdate(sql);
+	      System.out.println("Password update successful for "+username);
+	      if(row >= 0)
+	    	  return true;
+	      
+	    } catch (Exception e) {
+	      System.out.println(e);
+	      return false;
+	    } finally {
+	      DatabaseHelper.closeConnection(r, s, c);
+	    }
+	    
+	    return false;
   }
   
   public boolean updateUserRole(String username, String role) {
 
-	    String sql = "UPDATE SecOblig.AppUser SET role =? WHERE username =?";
+	    String sql = "UPDATE SecOblig.AppUser "
+	    		+ "SET role = '" + role + "' "
+	    				+ "WHERE username = '" + username + "'";
 	
 	    Connection c = null;
-	    PreparedStatement s = null;
+	    Statement s = null;
 	    ResultSet r = null;
 	
-	    try {
-			c = DatabaseHelper.getConnection();
-			s = c.prepareStatement(sql);
-			s.setString(1, role);
-			s.setString(2, username);
-			int row = s.executeUpdate();
-			if (row >= 0) {
-				System.out.println("Role update successful for " + username + " New role = " + role);
-				return true;
-			}
-		} catch (Exception e) {
-			System.out.println(e);
-			return false;
-		} finally {
-			DatabaseHelper.closeConnection(r, s, c);
-		}
-		return false;
+	    try {        
+	      c = DatabaseHelper.getConnection();
+	      s = c.createStatement();       
+	      int row = s.executeUpdate(sql);
+	      System.out.println("Role update successful for "+username+" New role = "+role);
+	      if(row >= 0)
+	    	  return true;
+	      
+	    } catch (Exception e) {
+	      System.out.println(e);
+	      return false;
+	    } finally {
+	      DatabaseHelper.closeConnection(r, s, c);
+	    }
+	    return false;
   }
   
-  // Changed algorithm from MD5 to SHA-256
-  public String generatePassHash(String password) throws NoSuchAlgorithmException {
-	  MessageDigest md = MessageDigest.getInstance("SHA-256");
-	  byte[] passbytes = password.getBytes();
-	  md.update(passbytes);
-	  byte[] passhash = md.digest();
-	  String hexOfHash = DatatypeConverter.printHexBinary(passhash);
-	  return hexOfHash;
+  public String generatePassHash(String password) {
+    return DigestUtils.md5Hex(password);
   }
-  
+
 }
 
