@@ -12,8 +12,9 @@ public class DictionaryDAO {
 	public static String DEFAULT_DICT_URL = "http://localhost:"+ServerConfig.PORT+"/DAT152ApplicationOblig/v003/";
 	private String opted_root;
 	
+	// Changed url to avoid cookie editing	HA MED DENNE?
 	public DictionaryDAO(String dicturl) {
-		opted_root = dicturl;
+		opted_root = DEFAULT_DICT_URL;
 	}
 
 	public List<String> findEntries(String ord) throws Exception {

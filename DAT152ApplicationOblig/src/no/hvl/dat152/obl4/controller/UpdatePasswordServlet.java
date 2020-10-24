@@ -1,6 +1,7 @@
 package no.hvl.dat152.obl4.controller;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -43,7 +44,12 @@ public class UpdatePasswordServlet extends HttpServlet {
 			
 			if (passwordnew.equals(confirmedPasswordnew)){
 				
-				successfulPasswordUpdate = userDAO.updateUserPassword(user.getUsername(), passwordnew);
+				try {
+					successfulPasswordUpdate = userDAO.updateUserPassword(user.getUsername(), passwordnew);
+				} catch (NoSuchAlgorithmException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				
 				if (successfulPasswordUpdate) {
 					

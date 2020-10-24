@@ -7,6 +7,6 @@ public class Validator {
 	}
 	
 	public static boolean validPassword(String parameter) {
-		return parameter.matches("^([0-9a-zA-ZæøåÆØÅ]{8,30})$");
+		return parameter.matches("^([0-9a-zA-ZÃ¦Ã¸Ã¥Ã†Ã˜Ã…]{8,30})$");
 	}
 }

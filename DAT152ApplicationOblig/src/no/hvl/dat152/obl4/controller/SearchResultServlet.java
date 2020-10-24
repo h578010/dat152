@@ -32,6 +32,16 @@ public class SearchResultServlet extends HttpServlet {
 			if (dicturl == null) {
 				dicturl = DEFAULT_DICT_URL;
 			}
+			
+			String expectedtoken = (String) request.getSession().getAttribute("csrftoken");
+			String receivedtoken = (String) request.getParameter("csrftoken");
+						
+			if (expectedtoken == null || receivedtoken == null || !expectedtoken.equals(receivedtoken)) {
+				response.getWriter().println("CSRF token error.");
+				return;
+			}
+				
+			request.getSession().removeAttribute("csrftoken");
 
 			String user = Validator.validString(request.getParameter("user"));
 			String searchkey = Validator.validString(request

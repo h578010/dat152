@@ -12,16 +12,18 @@
 	<p><a href="mydetails">My personal details and search history</a></p>
 	<form action="dosearch" method="get">
 		<input type="hidden" name="user" value="${user.username}" /> 
+		<input type="hidden" name="csrftoken" value="${csrftoken}" />	<! -- Added CSRF token -- >
 		<p>Dictionary search (enter word, e.g. Car): 
 			<input type="text" name="searchkey" />
 			<input type="submit" value="Go!"/></p>
 	</form>
 	<p><b>Last 5 searches done by anyone (Only visible to super Admins)</b></p>
 	<p>
+	<! -- Added c:out to avoid XSS attack -->
 	<c:forEach varStatus="counter" var="searchItem" items="${top5history}">
-		<b>${counter.count}:</b> ${searchItem.datetime} 
+		<b>${counter.count}:</b> <c:out value="${searchItem.datetime}"/> 
 		<a href="dosearch?user=${user.username}&searchkey=${searchItem.searchkey}">
-		${searchItem.searchkey}</a><br>
+		<c:out value="${searchItem.searchkey}"/></a><br>
 	</c:forEach><br>
 	<p><b>You are logged in as ${user.username}. <a href="logout">Log out</a></b></p>
 </body>

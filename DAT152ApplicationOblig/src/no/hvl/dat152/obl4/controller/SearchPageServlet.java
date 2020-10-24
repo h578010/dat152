@@ -3,6 +3,7 @@ package no.hvl.dat152.obl4.controller;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -35,6 +36,11 @@ public class SearchPageServlet extends HttpServlet {
 			}
 			
 			request.setAttribute("top5history", top5history);
+			
+			// Adding CSRF token to the user's session
+			String csrftoken = UUID.randomUUID().toString();
+			request.getSession().setAttribute("csrftoken", csrftoken);
+			request.setAttribute("csrftoken", csrftoken);
 
 			request.getRequestDispatcher("searchpage.jsp").forward(request,
 					response);
