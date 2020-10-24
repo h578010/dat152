@@ -15,40 +15,36 @@ import no.hvl.dat152.obl4.database.AppUser;
 import no.hvl.dat152.obl4.database.SearchItem;
 import no.hvl.dat152.obl4.database.SearchItemDAO;
 import no.hvl.dat152.obl4.util.Role;
+import no.hvl.dat152.obl4.util.Validator;
 
 @WebServlet("/searchpage")
 public class SearchPageServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// Added no-cache header to avoid caching of session/login
+		response.setHeader("Cache-Control", "private, no-store, no-cache, must-revalidate");
+		
+		Validator.ensureCSRFToken(request);
 
 		if (RequestHelper.isLoggedIn(request)) {
-			
 			AppUser authUser = (AppUser) request.getSession().getAttribute("user");
-			
+
 			List<SearchItem> top5history = new ArrayList<SearchItem>();
-			
+
 			if(authUser.getRole().equals(Role.ADMIN.toString())) {
-				
+
 				SearchItemDAO searchItemDAO = new SearchItemDAO();
 				top5history = searchItemDAO.getSearchHistoryLastFive();
 			}
-			
-			request.setAttribute("top5history", top5history);
-			
-			// Adding CSRF token to the user's session
-			String csrftoken = UUID.randomUUID().toString();
-			request.getSession().setAttribute("csrftoken", csrftoken);
-			request.setAttribute("csrftoken", csrftoken);
 
-			request.getRequestDispatcher("searchpage.jsp").forward(request,
-					response);
+			request.setAttribute("top5history", top5history);
+
+			request.getRequestDispatcher("searchpage.jsp").forward(request, response);
 
 		} else {
 			request.getSession().invalidate();
-			request.getRequestDispatcher("index.html").forward(request,
-					response);
+			request.getRequestDispatcher("index.html").forward(request, response);
 		}
 	}
 }

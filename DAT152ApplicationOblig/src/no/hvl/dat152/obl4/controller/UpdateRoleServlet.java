@@ -17,28 +17,24 @@ import no.hvl.dat152.obl4.util.Validator;
 public class UpdateRoleServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doPost(request, response);
 	}
 
-	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		request.removeAttribute("message");
 
 		boolean successfulRoleUpdate = false;
 		
-		String username = Validator.validString(request
-				.getParameter("username"));
-		String newrole = Validator.validString(request
-				.getParameter("role"));
+		String username = Validator.validString(request.getParameter("username"));
+		String newrole = Validator.validString(request.getParameter("role"));
 		
 		AppUser user = (AppUser) request.getSession().getAttribute("user");
 		
 		if(username != null) {
 			
-			if (RequestHelper.isLoggedIn(request) && user.getRole().equals(Role.ADMIN.toString())) {
+			if (RequestHelper.isLoggedIn(request) && user.getRole().equals(Role.ADMIN.toString()) && Validator.isCSRFTokenMatch(request)) {
 				
 				AppUserDAO userDAO = new AppUserDAO();
 				

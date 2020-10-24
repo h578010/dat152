@@ -12,14 +12,14 @@ import javax.servlet.http.HttpServletResponse;
 import no.hvl.dat152.obl4.database.AppUser;
 import no.hvl.dat152.obl4.database.SearchItem;
 import no.hvl.dat152.obl4.database.SearchItemDAO;
+import no.hvl.dat152.obl4.util.Validator;
 
 
 @WebServlet("/mydetails")
 public class MyDetailsServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		if (RequestHelper.isLoggedIn(request)) {
 			
@@ -37,17 +37,14 @@ public class MyDetailsServlet extends HttpServlet {
 
 			request.setAttribute("myhistory", myhistory);
 
-			request.getRequestDispatcher("mydetails.jsp").forward(request,
-					response);
+			request.getRequestDispatcher("mydetails.jsp").forward(request, response);
 		} else {
 			request.getSession().invalidate();
-			request.getRequestDispatcher("index.html").forward(request,
-					response);
+			request.getRequestDispatcher("index.html").forward(request,	response);
 		}
 	}
 	
-	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doGet(request, response);
 	}
 }

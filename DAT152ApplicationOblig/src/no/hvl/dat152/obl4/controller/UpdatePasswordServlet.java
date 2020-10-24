@@ -17,26 +17,23 @@ import no.hvl.dat152.obl4.util.Validator;
 public class UpdatePasswordServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Validator.ensureCSRFToken(request);
 		//request.getRequestDispatcher("updatepassword.jsp").forward(request, response);
-		doPost(request, response);
+		//doPost(request, response);
 	}
 
-	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		request.removeAttribute("message");
 
 		boolean successfulPasswordUpdate = false;
 		
-		String passwordnew = Validator.validString(request
-				.getParameter("passwordnew"));
-		String confirmedPasswordnew = Validator.validString(request
-				.getParameter("confirm_passwordnew"));
+		String passwordnew = Validator.validString(request.getParameter("passwordnew"));
+		String confirmedPasswordnew = Validator.validString(request.getParameter("confirm_passwordnew"));
 		
 		
-		if (RequestHelper.isLoggedIn(request)) {
+		if (RequestHelper.isLoggedIn(request) && Validator.isCSRFTokenMatch(request)) {
 			
 			AppUser user = (AppUser) request.getSession().getAttribute("user");
 			

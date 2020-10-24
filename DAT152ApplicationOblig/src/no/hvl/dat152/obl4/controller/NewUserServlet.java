@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import no.hvl.dat152.obl4.database.AppUser;
 import no.hvl.dat152.obl4.database.AppUserDAO;
+import no.hvl.dat152.obl4.util.HtmlEscape;
 import no.hvl.dat152.obl4.util.Role;
 import no.hvl.dat152.obl4.util.Validator;
 
@@ -19,53 +20,37 @@ import no.hvl.dat152.obl4.util.Validator;
 public class NewUserServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("Hei hei");
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Validator.ensureCSRFToken(request);
 		request.getRequestDispatcher("newuser.jsp").forward(request, response);
 	}
 
-	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		request.removeAttribute("message");
 		request.removeAttribute("usernames");
 		request.removeAttribute("updaterole");
-		System.out.println("post");
 
 		boolean successfulRegistration = false;
 
-		String username = Validator.validString(request
-				.getParameter("username"));
-		String password = Validator.validString(request
-				.getParameter("password"));
-		String confirmedPassword = Validator.validString(request
-				.getParameter("confirm_password"));
-		String firstName = Validator.validString(request
-				.getParameter("first_name"));
-		String lastName = Validator.validString(request
-				.getParameter("last_name"));
-		String mobilePhone = Validator.validString(request
-				.getParameter("mobile_phone"));
-		String preferredDict = Validator.validString(request
-				.getParameter("dicturl"));
+		String username = Validator.validString(request.getParameter("username"));
+		String password = Validator.validString(request.getParameter("password"));
+		String confirmedPassword = Validator.validString(request.getParameter("confirm_password"));
+		String firstName = Validator.validString(request.getParameter("first_name"));
+		String lastName = Validator.validString(request.getParameter("last_name"));
+		String mobilePhone = Validator.validString(request.getParameter("mobile_phone"));
+		String preferredDict = Validator.validString(request.getParameter("dicturl"));
 
 		AppUser user = null;
-		//if (Validator.validPassword(password) && password.equals(confirmedPassword))
-		if (Validator.validPassword(password) && password.equals(confirmedPassword)) {
-			System.out.println(password);
+		if (Validator.validPassword(password) && password.equals(confirmedPassword) && Validator.isCSRFTokenMatch(request)) {
 
 			AppUserDAO userDAO = new AppUserDAO();
-
-			user = new AppUser(username, userDAO.generatePassHash(password),
-					firstName, lastName, mobilePhone, Role.USER.toString());
-
+			user = new AppUser(username, userDAO.generatePassHash(password), firstName, lastName, mobilePhone, Role.USER.toString());
 			successfulRegistration = userDAO.saveUser(user);
 
 		}
 
 		if (successfulRegistration) {
-			System.out.println("success");
 			request.getSession().setAttribute("user", user);
 			Cookie dicturlCookie = new Cookie("dicturl", preferredDict);
 			dicturlCookie.setMaxAge(1000000);
@@ -74,7 +59,6 @@ public class NewUserServlet extends HttpServlet {
 			response.sendRedirect("searchpage");
 
 		} else {
-			System.out.println("error");
 			request.setAttribute("message", "Registration failed!");
 			request.getRequestDispatcher("newuser.jsp").forward(request,
 					response);

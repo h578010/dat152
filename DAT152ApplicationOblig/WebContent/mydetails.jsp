@@ -22,6 +22,7 @@
 		${searchItem.searchkey}</a><br>
 	</c:forEach><br>
 	<form action="mydetails" method="post">
+	<input type="hidden" name="csrftoken" value="${csrftoken}" />
 	<table>
 		<tr><td><p>Sort By </td></tr>
 		<tr><td><input type="radio" name="sortkey" value="datetime">Date<br></td></tr>

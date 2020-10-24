@@ -11,6 +11,7 @@
 	<h3>Register new user</h3>
 	<p><font color="red">${message}</font></p>
 	<form method="post">
+		<input type="hidden" name="csrftoken" value="${csrftoken}" />
 		<p>Username <input type="text" name="username" /></p>
 		<p>Password <input type="password" name="password" /></p>
 		<p>Confirm Password <input type="password" name="confirm_password" /></p>

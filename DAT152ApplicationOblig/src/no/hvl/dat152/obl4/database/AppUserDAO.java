@@ -188,7 +188,6 @@ public class AppUserDAO {
 			md.update(passbytes);
 			byte[] passhash = md.digest();
 			hexOfHash = DatatypeConverter.printHexBinary(passhash);
-			System.out.println(hexOfHash);
 
 		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block

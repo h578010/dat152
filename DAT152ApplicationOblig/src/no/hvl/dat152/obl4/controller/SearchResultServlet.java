@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import no.hvl.dat152.obl4.database.SearchItem;
 import no.hvl.dat152.obl4.database.SearchItemDAO;
 import no.hvl.dat152.obl4.dictionary.DictionaryDAO;
+import no.hvl.dat152.obl4.util.HtmlEscape;
 import no.hvl.dat152.obl4.util.Validator;
 
 @WebServlet("/dosearch")
@@ -23,29 +24,18 @@ public class SearchResultServlet extends HttpServlet {
 
 	private static final String DEFAULT_DICT_URL = DictionaryDAO.DEFAULT_DICT_URL;
 
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		if (RequestHelper.isLoggedIn(request)) {
+		if (RequestHelper.isLoggedIn(request) && Validator.isCSRFTokenMatch(request)) {
 
 			String dicturl = RequestHelper.getCookieValue(request, "dicturl");
 			if (dicturl == null) {
 				dicturl = DEFAULT_DICT_URL;
 			}
-			
-			String expectedtoken = (String) request.getSession().getAttribute("csrftoken");
-			String receivedtoken = (String) request.getParameter("csrftoken");
-						
-			if (expectedtoken == null || receivedtoken == null || !expectedtoken.equals(receivedtoken)) {
-				response.getWriter().println("CSRF token error.");
-				return;
-			}
-				
-			request.getSession().removeAttribute("csrftoken");
 
 			String user = Validator.validString(request.getParameter("user"));
-			String searchkey = Validator.validString(request
-					.getParameter("searchkey"));
+			String searchkey = Validator.validString(request.getParameter("searchkey"));
+			
 
 			Timestamp datetime = new Timestamp(new Date().getTime());
 			SearchItem search = new SearchItem(datetime, user, searchkey);

@@ -12,5 +12,6 @@
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="C:/skole/dat152_webapp/code/DAT152ApplicationOblig/lib/encoder-1.2.2.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
