@@ -18,12 +18,14 @@ public class UpdatePasswordServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.addHeader("X-XSS-Protection", "1; mode=block");
 		Validator.ensureCSRFToken(request);
 		//request.getRequestDispatcher("updatepassword.jsp").forward(request, response);
 		//doPost(request, response);
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.addHeader("X-XSS-Protection", "1; mode=block");	
 
 		request.removeAttribute("message");
 

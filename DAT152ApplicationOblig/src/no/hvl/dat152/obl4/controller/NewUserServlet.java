@@ -21,12 +21,14 @@ public class NewUserServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.addHeader("X-XSS-Protection", "1; mode=block");
 		Validator.ensureCSRFToken(request);
 		request.getRequestDispatcher("newuser.jsp").forward(request, response);
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+		response.addHeader("X-XSS-Protection", "1; mode=block");
+		
 		request.removeAttribute("message");
 		request.removeAttribute("usernames");
 		request.removeAttribute("updaterole");

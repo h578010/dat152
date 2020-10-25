@@ -25,6 +25,7 @@ public class SearchResultServlet extends HttpServlet {
 	private static final String DEFAULT_DICT_URL = DictionaryDAO.DEFAULT_DICT_URL;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.addHeader("X-XSS-Protection", "1; mode=block");
 
 		if (RequestHelper.isLoggedIn(request) && Validator.isCSRFTokenMatch(request)) {
 

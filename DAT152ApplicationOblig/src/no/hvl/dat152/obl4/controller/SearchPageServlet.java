@@ -24,6 +24,7 @@ public class SearchPageServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// Added no-cache header to avoid caching of session/login
 		response.setHeader("Cache-Control", "private, no-store, no-cache, must-revalidate");
+		response.addHeader("X-XSS-Protection", "1; mode=block");
 		
 		Validator.ensureCSRFToken(request);
 

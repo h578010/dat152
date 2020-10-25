@@ -20,6 +20,7 @@ public class MyDetailsServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.addHeader("X-XSS-Protection", "1; mode=block");
 
 		if (RequestHelper.isLoggedIn(request)) {
 			
@@ -45,6 +46,7 @@ public class MyDetailsServlet extends HttpServlet {
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.addHeader("X-XSS-Protection", "1; mode=block");
 		doGet(request, response);
 	}
 }
