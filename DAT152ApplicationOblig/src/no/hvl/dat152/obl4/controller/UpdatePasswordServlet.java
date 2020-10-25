@@ -28,21 +28,17 @@ public class UpdatePasswordServlet extends HttpServlet {
 		response.addHeader("X-XSS-Protection", "1; mode=block");	
 
 		request.removeAttribute("message");
-
-		boolean successfulPasswordUpdate = false;
 		
+		boolean successfulPasswordUpdate = false;
 		String passwordnew = Validator.validString(request.getParameter("passwordnew"));
 		String confirmedPasswordnew = Validator.validString(request.getParameter("confirm_passwordnew"));
-		
 		
 		if (RequestHelper.isLoggedIn(request) && Validator.isCSRFTokenMatch(request)) {
 			
 			AppUser user = (AppUser) request.getSession().getAttribute("user");
-			
 			AppUserDAO userDAO = new AppUserDAO();
 			
-			if (passwordnew.equals(confirmedPasswordnew)){
-				
+			if (passwordnew.equals(confirmedPasswordnew) && Validator.validPassword(passwordnew)){
 				try {
 					successfulPasswordUpdate = userDAO.updateUserPassword(user.getUsername(), passwordnew);
 				} catch (NoSuchAlgorithmException e) {
@@ -51,20 +47,17 @@ public class UpdatePasswordServlet extends HttpServlet {
 				}
 				
 				if (successfulPasswordUpdate) {
-					
 					response.sendRedirect("mydetails");
 
 				} else {
 					request.setAttribute("message", "Password update failed!");
-					request.getRequestDispatcher("updatepassword.jsp").forward(request,
-							response);
+					request.getRequestDispatcher("updatepassword.jsp").forward(request,	response);
 				}
 			}
 			
 		} else {
 			request.getSession().invalidate();
-			request.getRequestDispatcher("index.html").forward(request,
-					response);
+			request.getRequestDispatcher("index.html").forward(request, response);
 		}
 
 	}
