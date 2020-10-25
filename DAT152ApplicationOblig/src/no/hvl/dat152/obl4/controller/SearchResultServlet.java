@@ -27,7 +27,7 @@ public class SearchResultServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.addHeader("X-XSS-Protection", "1; mode=block");
 
-		if (RequestHelper.isLoggedIn(request) && Validator.isCSRFTokenMatch(request)) {
+		if (RequestHelper.isLoggedIn(request)) {
 
 			String dicturl = RequestHelper.getCookieValue(request, "dicturl");
 			if (dicturl == null) {
@@ -55,12 +55,10 @@ public class SearchResultServlet extends HttpServlet {
 
 			request.setAttribute("searchkey", searchkey);
 			request.setAttribute("result", foundEntries);
-			request.getRequestDispatcher("searchresult.jsp").forward(request,
-					response);
+			request.getRequestDispatcher("searchresult.jsp").forward(request, response);
 		} else {
 			request.getSession().invalidate();
-			request.getRequestDispatcher("index.html").forward(request,
-					response);
+			request.getRequestDispatcher("index.html").forward(request, response);
 		}
 	}
 
